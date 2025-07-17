@@ -3,7 +3,6 @@
 import { useState } from "react";
 import styles from "./sushi-menu.module.css";
 
-// Types
 interface Product {
   id: string;
   name: string;
@@ -74,7 +73,6 @@ export default function SushiMenu() {
     }).format(price);
   };
 
-  // Cart management functions
   const addToCart = (product: Product) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find(
@@ -82,14 +80,12 @@ export default function SushiMenu() {
       );
 
       if (existingItem) {
-        // If item already exists, increase quantity
         return prevCart.map((item) =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
-        // If item doesn't exist, add new item
         return [...prevCart, { product, quantity: 1 }];
       }
     });
@@ -102,14 +98,12 @@ export default function SushiMenu() {
       );
 
       if (existingItem && existingItem.quantity > 1) {
-        // If quantity > 1, decrease quantity
         return prevCart.map((item) =>
           item.product.id === productId
             ? { ...item, quantity: item.quantity - 1 }
             : item
         );
       } else {
-        // If quantity is 1, remove item completely
         return prevCart.filter((item) => item.product.id !== productId);
       }
     });
@@ -126,7 +120,6 @@ export default function SushiMenu() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <header className={styles.header}>
         <h1 className={styles.title}>Sushi House</h1>
         <button className={styles.searchButton}>
