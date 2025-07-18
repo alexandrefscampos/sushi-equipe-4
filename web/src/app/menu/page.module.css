@@ -88,6 +88,50 @@
   overflow-y: auto;
 }
 
+/* Loading and Error States */
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading p {
+  color: #666666;
+  font-size: 16px;
+}
+
+.error p {
+  color: #dc3545;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.retryButton {
+  background-color: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retryButton:hover {
+  background-color: #0056CC;
+}
+
+.noItems {
+  text-align: center;
+  color: #666666;
+  font-size: 16px;
+  padding: 40px 20px;
+}
+
 .productCard {
   display: flex;
   align-items: center;
@@ -397,5 +441,13 @@
   .cartButton:disabled {
     background-color: #444444;
     color: #888888;
+  }
+
+  .loading p {
+    color: #999999;
+  }
+
+  .noItems {
+    color: #999999;
   }
 } 
