@@ -8,7 +8,7 @@ export class MenuController {
 
   @Get()
   getMenu(@Query('category') category?: string): MenuItemDto[] {
-    if (category) {
+    if (category !== undefined) {
       return this.menuService.findByCategory(category);
     }
     return this.menuService.findAvailable();
