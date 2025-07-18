@@ -4,7 +4,7 @@ import * as menuData from '../data/menu.json';
 
 @Injectable()
 export class MenuService {
-  private menuItems: MenuItemDto[] = menuData;
+  private menuItems: MenuItemDto[] = menuData as MenuItemDto[];
 
   findAll(): MenuItemDto[] {
     return this.menuItems;
