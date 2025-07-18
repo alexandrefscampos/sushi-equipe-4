@@ -1,122 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: "sushis" | "combos" | "pratos-quentes";
-  image?: string;
-}
-
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
-const products: Product[] = [
-  {
-    id: "1",
-    name: "Philadelphia",
-    description: "Arroz, nori, salmão, cream cheese",
-    price: 24.9,
-    category: "sushis",
-  },
-  {
-    id: "2",
-    name: "Hot Roll",
-    description: "Salmão empanado, cream cheese",
-    price: 23.9,
-    category: "sushis",
-  },
-  {
-    id: "3",
-    name: "Combo 16 peças",
-    description: "4 hossomakis, 4 nigiris, 8 uramakis",
-    price: 49.9,
-    category: "combos",
-  },
-];
+import { api, MenuItem } from "@/lib/api";
+import { useCart } from "@/contexts/CartContext";
 
 const categories = [
-  { id: "sushis", label: "Sushis" },
+  { id: "sashimi", label: "Sashimi" },
+  { id: "maki", label: "Maki" },
+  { id: "nigiri", label: "Nigiri" },
   { id: "combos", label: "Combos" },
-  { id: "pratos-quentes", label: "Pratos Quentes" },
 ] as const;
 
 export default function MenuPage() {
-  const [activeCategory, setActiveCategory] = useState<string>("sushis");
-  const [cart, setCart] = useState<CartItem[]>([
-    { product: products[0], quantity: 1 },
-    { product: products[1], quantity: 1 },
-  ]);
+  const [activeCategory, setActiveCategory] = useState<string>("sashimi");
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredProducts = products.filter((product) =>
-    activeCategory === "sushis"
-      ? product.category === "sushis" || product.category === "combos"
-      : product.category === activeCategory
-  );
+  const {
+    addToCart,
+    removeFromCart,
+    clearCart,
+    getProductQuantityInCart,
+    cartTotal,
+    cartItemCount,
+  } = useCart();
 
-  const cartTotal = cart.reduce(
-    (total, item) => total + item.product.price * item.quantity,
-    0
-  );
-  const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const items = await api.getMenuItems(activeCategory);
+        setMenuItems(items);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to load menu items"
+        );
+        console.error("Error fetching menu items:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, [activeCategory]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(price);
-  };
-
-  const addToCart = (product: Product) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find(
-        (item) => item.product.id === product.id
-      );
-
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        return [...prevCart, { product, quantity: 1 }];
-      }
-    });
-  };
-
-  const removeFromCart = (productId: string) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find(
-        (item) => item.product.id === productId
-      );
-
-      if (existingItem && existingItem.quantity > 1) {
-        return prevCart.map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        );
-      } else {
-        return prevCart.filter((item) => item.product.id !== productId);
-      }
-    });
-  };
-
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  const getProductQuantityInCart = (productId: string) => {
-    const cartItem = cart.find((item) => item.product.id === productId);
-    return cartItem ? cartItem.quantity : 0;
   };
 
   return (
@@ -153,64 +89,93 @@ export default function MenuPage() {
       </nav>
 
       <main className={styles.productList}>
-        {filteredProducts.map((product) => {
-          const quantityInCart = getProductQuantityInCart(product.id);
+        {loading && (
+          <div className={styles.loading}>
+            <p>Carregando itens do menu...</p>
+          </div>
+        )}
 
-          return (
-            <div key={product.id} className={styles.productCard}>
-              <div className={styles.productImage}>
-                <div className={styles.imagePlaceholder}>
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12,5 19,12 12,19" />
-                  </svg>
-                </div>
-              </div>
-              <div className={styles.productInfo}>
-                <h3 className={styles.productName}>{product.name}</h3>
-                <p className={styles.productDescription}>
-                  {product.description}
-                </p>
-              </div>
-              <div className={styles.productActions}>
-                <div className={styles.productPrice}>
-                  {formatPrice(product.price)}
-                </div>
-                {quantityInCart > 0 ? (
-                  <div className={styles.quantityControls}>
-                    <button
-                      className={styles.quantityButton}
-                      onClick={() => removeFromCart(product.id)}
-                    >
-                      -
-                    </button>
-                    <span className={styles.quantity}>{quantityInCart}</span>
-                    <button
-                      className={styles.quantityButton}
-                      onClick={() => addToCart(product)}
-                    >
-                      +
-                    </button>
+        {error && (
+          <div className={styles.error}>
+            <p>Erro ao carregar o menu: {error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <>
+            {menuItems.length === 0 ? (
+              <p className={styles.noItems}>
+                Nenhum item disponível nesta categoria.
+              </p>
+            ) : (
+              menuItems.map((item) => {
+                const quantityInCart = getProductQuantityInCart(item.id);
+                return (
+                  <div key={item.id} className={styles.productCard}>
+                    <div className={styles.productImage}>
+                      <div className={styles.imagePlaceholder}>
+                        <svg
+                          width="40"
+                          height="40"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1"
+                        >
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                          <polyline points="12,5 19,12 12,19" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className={styles.productInfo}>
+                      <h3 className={styles.productName}>{item.name}</h3>
+                      <p className={styles.productDescription}>
+                        {item.description}
+                      </p>
+                    </div>
+                    <div className={styles.productActions}>
+                      <div className={styles.productPrice}>
+                        {formatPrice(item.price)}
+                      </div>
+                      {quantityInCart > 0 ? (
+                        <div className={styles.quantityControls}>
+                          <button
+                            className={styles.quantityButton}
+                            onClick={() => removeFromCart(item.id)}
+                          >
+                            -
+                          </button>
+                          <span className={styles.quantity}>
+                            {quantityInCart}
+                          </span>
+                          <button
+                            className={styles.quantityButton}
+                            onClick={() => addToCart(item)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          className={styles.addButton}
+                          onClick={() => addToCart(item)}
+                        >
+                          Adicionar
+                        </button>
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <button
-                    className={styles.addButton}
-                    onClick={() => addToCart(product)}
-                  >
-                    Adicionar
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+                );
+              })
+            )}
+          </>
+        )}
       </main>
 
       <footer className={styles.cartSummary}>

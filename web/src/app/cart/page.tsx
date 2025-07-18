@@ -3,44 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: "sushis" | "combos" | "pratos-quentes";
-  image?: string;
-}
-
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
-const sampleProducts: Product[] = [
-  {
-    id: "1",
-    name: "Philadelphia",
-    description: "Arroz, nori, salmão, cream cheese",
-    price: 24.9,
-    category: "sushis",
-  },
-  {
-    id: "3",
-    name: "Combo 16 peças",
-    description: "4 hossomakis, 4 nigiris, 8 uramakis",
-    price: 49.9,
-    category: "combos",
-  },
-];
+import { useCart } from "@/contexts/CartContext";
 
 export default function CartPage() {
-  const [cart, setCart] = useState<CartItem[]>([
-    { product: sampleProducts[0], quantity: 1 },
-    { product: sampleProducts[1], quantity: 1 },
-  ]);
   const [couponCode, setCouponCode] = useState("");
+
+  const { cart, removeFromCart, addToCart, clearCart } = useCart();
 
   const deliveryFee = 6.0;
   const subtotal = cart.reduce(
@@ -56,25 +24,72 @@ export default function CartPage() {
     }).format(price);
   };
 
-  const updateQuantity = (productId: string, newQuantity: number) => {
+  const updateQuantity = (productId: number, newQuantity: number) => {
+    const currentItem = cart.find((item) => item.product.id === productId);
+    if (!currentItem) return;
+
     if (newQuantity <= 0) {
-      setCart((prevCart) =>
-        prevCart.filter((item) => item.product.id !== productId)
-      );
-    } else {
-      setCart((prevCart) =>
-        prevCart.map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity: newQuantity }
-            : item
-        )
-      );
+      // Remove completely by calling removeFromCart multiple times
+      for (let i = 0; i < currentItem.quantity; i++) {
+        removeFromCart(productId);
+      }
+    } else if (newQuantity > currentItem.quantity) {
+      // Add items
+      for (let i = currentItem.quantity; i < newQuantity; i++) {
+        addToCart(currentItem.product);
+      }
+    } else if (newQuantity < currentItem.quantity) {
+      // Remove items
+      for (let i = newQuantity; i < currentItem.quantity; i++) {
+        removeFromCart(productId);
+      }
     }
   };
 
   const applyCoupon = () => {
     alert("Funcionalidade de cupom será implementada");
   };
+
+  const handleCheckout = () => {
+    alert(`Pedido finalizado com sucesso! Total: ${formatPrice(total)}`);
+    // In a real app, this would send the order to the backend
+    // For now, we'll just clear the cart
+    setTimeout(() => {
+      clearCart();
+    }, 1000);
+  };
+
+  if (cart.length === 0) {
+    return (
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <Link href="/menu" className={styles.backButton}>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </Link>
+          <h1 className={styles.title}>Carrinho de Compras</h1>
+          <div></div>
+        </header>
+
+        <main className={styles.main}>
+          <div className={styles.emptyCart}>
+            <p>Seu carrinho está vazio</p>
+            <Link href="/menu" className={styles.backToMenuButton}>
+              Voltar ao Menu
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -181,18 +196,20 @@ export default function CartPage() {
 
         <section className={styles.deliveryInfo}>
           <div className={styles.addressRow}>
-            <span>Rua das Laranjeiras, 123</span>
+            <span>Endereço de entrega:</span>
             <button className={styles.editButton}>Editar</button>
           </div>
           <div className={styles.timeRow}>
             <span>Tempo estimado:</span>
-            <span>35-45 min</span>
+            <span>30-45 min</span>
           </div>
         </section>
       </main>
 
       <footer className={styles.footer}>
-        <button className={styles.checkoutButton}>Finalizar Pedido</button>
+        <button className={styles.checkoutButton} onClick={handleCheckout}>
+          Finalizar Pedido - {formatPrice(total)}
+        </button>
       </footer>
     </div>
   );
