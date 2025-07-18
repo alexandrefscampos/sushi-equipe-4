@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./sushi-menu.module.css";
+import Link from "next/link";
+import styles from "./page.module.css";
 
 interface Product {
   id: string;
@@ -47,7 +48,7 @@ const categories = [
   { id: "pratos-quentes", label: "Pratos Quentes" },
 ] as const;
 
-export default function SushiMenu() {
+export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>("sushis");
   const [cart, setCart] = useState<CartItem[]>([
     { product: products[0], quantity: 1 },
@@ -152,38 +153,81 @@ export default function SushiMenu() {
       </nav>
 
       <main className={styles.productList}>
-        {filteredProducts.map((product) => (
-          <div key={product.id} className={styles.productCard}>
-            <div className={styles.productImage}>
-              <div className={styles.imagePlaceholder}>
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12,5 19,12 12,19" />
-                </svg>
+        {filteredProducts.map((product) => {
+          const quantityInCart = getProductQuantityInCart(product.id);
+
+          return (
+            <div key={product.id} className={styles.productCard}>
+              <div className={styles.productImage}>
+                <div className={styles.imagePlaceholder}>
+                  <svg
+                    width="40"
+                    height="40"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12,5 19,12 12,19" />
+                  </svg>
+                </div>
+              </div>
+              <div className={styles.productInfo}>
+                <h3 className={styles.productName}>{product.name}</h3>
+                <p className={styles.productDescription}>
+                  {product.description}
+                </p>
+              </div>
+              <div className={styles.productActions}>
+                <div className={styles.productPrice}>
+                  {formatPrice(product.price)}
+                </div>
+                {quantityInCart > 0 ? (
+                  <div className={styles.quantityControls}>
+                    <button
+                      className={styles.quantityButton}
+                      onClick={() => removeFromCart(product.id)}
+                    >
+                      -
+                    </button>
+                    <span className={styles.quantity}>{quantityInCart}</span>
+                    <button
+                      className={styles.quantityButton}
+                      onClick={() => addToCart(product)}
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className={styles.addButton}
+                    onClick={() => addToCart(product)}
+                  >
+                    Adicionar
+                  </button>
+                )}
               </div>
             </div>
-            <div className={styles.productInfo}>
-              <h3 className={styles.productName}>{product.name}</h3>
-              <p className={styles.productDescription}>{product.description}</p>
-            </div>
-            <div className={styles.productPrice}>
-              {formatPrice(product.price)}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </main>
 
       <footer className={styles.cartSummary}>
-        <button className={styles.cartButton}>
-          Ver Carrinho ({cartItemCount}) - {formatPrice(cartTotal)}
-        </button>
+        {cartItemCount > 0 ? (
+          <div className={styles.cartFooter}>
+            <button className={styles.clearButton} onClick={clearCart}>
+              Limpar
+            </button>
+            <Link href="/cart" className={styles.cartButton}>
+              Ver Carrinho ({cartItemCount}) - {formatPrice(cartTotal)}
+            </Link>
+          </div>
+        ) : (
+          <button className={styles.cartButton} disabled>
+            Carrinho vazio
+          </button>
+        )}
       </footer>
     </div>
   );
