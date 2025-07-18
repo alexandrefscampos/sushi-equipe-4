@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { MenuItemDto } from './dto/menu-item.dto';
+import * as menuData from '../data/menu.json';
 
 @Injectable()
 export class MenuService {
-  private menuItems: MenuItemDto[] = [];
+  private menuItems: MenuItemDto[] = menuData;
 
   findAll(): MenuItemDto[] {
     return this.menuItems;

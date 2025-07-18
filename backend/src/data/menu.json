@@ -1,0 +1,82 @@
+[
+    {
+      "id": 1,
+      "name": "Salmão Sashimi",
+      "description": "Fatias frescas de salmão",
+      "price": 28.90,
+      "category": "sashimi",
+      "available": true
+    },
+    {
+      "id": 2,
+      "name": "Atum Sashimi",
+      "description": "Fatias frescas de atum",
+      "price": 32.90,
+      "category": "sashimi",
+      "available": true
+    },
+    {
+      "id": 3,
+      "name": "California Roll",
+      "description": "Sushi com salmão, pepino e abacate",
+      "price": 24.90,
+      "category": "maki",
+      "available": true
+    },
+    {
+      "id": 4,
+      "name": "Philadelphia Roll",
+      "description": "Sushi com salmão e cream cheese",
+      "price": 26.90,
+      "category": "maki",
+      "available": false
+    },
+    {
+      "id": 5,
+      "name": "Nigiri de Salmão",
+      "description": "Bolinho de arroz com salmão",
+      "price": 8.90,
+      "category": "nigiri",
+      "available": true
+    },
+    {
+      "id": 6,
+      "name": "Nigiri de Atum",
+      "description": "Bolinho de arroz com atum",
+      "price": 9.90,
+      "category": "nigiri",
+      "available": true
+    },
+    {
+      "id": 7,
+      "name": "Temaki de Salmão",
+      "description": "Cone de alga com salmão e salada",
+      "price": 25.90,
+      "category": "temaki",
+      "available": true
+    },
+    {
+      "id": 8,
+      "name": "Combo Sashimi",
+      "description": "Variedade de sashimis (salmão, atum, peixe branco)",
+      "price": 45.90,
+      "category": "combo",
+      "available": true
+    },
+    {
+      "id": 9,
+      "name": "Hot Roll",
+      "description": "Sushi empanado e frito",
+      "price": 22.90,
+      "category": "hot",
+      "available": false
+    },
+    {
+      "id": 10,
+      "name": "Gyoza",
+      "description": "Pastel japonês frito (5 unidades)",
+      "price": 18.90,
+      "category": "entrada",
+      "available": true
+    }
+  ]
