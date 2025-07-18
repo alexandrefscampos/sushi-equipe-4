@@ -1,5 +1,5 @@
-import SushiMenu from "@/pages/menu/sushi-menu";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return <SushiMenu />;
+export default function HomePage() {
+  redirect("/menu");
 }
