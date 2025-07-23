@@ -1,9 +1,11 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
-import { OrdersService, OrderDto } from './orders.service';
+import { OrdersService } from './order.service';
+import { OrderDto } from './dto/order.dto';
+
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   @Post()
   async create(@Body() body: Omit<OrderDto, 'id' | 'createdAt'>): Promise<OrderDto> {

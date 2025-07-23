@@ -5,15 +5,11 @@ import { OrderDto } from './dto/order.dto';
 
 @Injectable()
 export class OrdersService {
-  private filePath = join(process.cwd(), 'data', 'orders.json');
+  private filePath = join(process.cwd(), 'src/data/orders.json');
 
   private async readOrders(): Promise<OrderDto[]> {
-    try {
-      const data = await readFile(this.filePath, 'utf8');
-      return JSON.parse(data) as OrderDto[];
-    } catch {
-      return [];
-    }
+    const data = await readFile(this.filePath, 'utf8');
+    return JSON.parse(data) as OrderDto[];
   }
 
   private async saveOrders(orders: OrderDto[]): Promise<void> {

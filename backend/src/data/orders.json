@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "items": [
+      {
+        "productId": 1,
+        "quantity": 2
+      },
+      {
+        "productId": 5,
+        "quantity": 4
+      }
+    ],
+    "total": 93.4,
+    "createdAt": "2025-07-21T14:23:00Z"
+  },
+  {
+    "id": 2,
+    "items": [
+      {
+        "productId": 3,
+        "quantity": 1
+      },
+      {
+        "productId": 4,
+        "quantity": 1
+      },
+      {
+        "productId": 9,
+        "quantity": 2
+      }
+    ],
+    "total": 97.6,
+    "createdAt": "2025-07-21T16:45:00Z"
+  },
+  {
+    "id": 3,
+    "items": [
+      {
+        "productId": 7,
+        "quantity": 3
+      },
+      {
+        "productId": 8,
+        "quantity": 1
+      }
+    ],
+    "total": 123.6,
+    "createdAt": "2025-07-22T11:10:00Z"
+  }
+]
